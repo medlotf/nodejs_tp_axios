@@ -99,27 +99,33 @@ app.get('/users/albums/photos',async (req,res)=>{
     const {data}= await axios.get("https://jsonplaceholder.typicode.com/users")
     try{
         let users=data;
+        var finalResult=[];
         users.forEach(async user => {
             const {data}= await axios.get("https://jsonplaceholder.typicode.com/albums?userId="+user.id)
             try {
                 let userAlbums=data;
-                userAlbums.forEach(async uAlb => {
+                user.Albums=userAlbums;
+                user.Albums.forEach(async (uAlb) => {
                     const {data}= await axios.get("https://jsonplaceholder.typicode.com/albums/"+uAlb.id+"/photos")
                     try {
                         let photosInAlb=data;
                         uAlb.Photos=photosInAlb;
+                        user.Albums=uAlb;
+                        //res.send(user)
                     } catch (error) {
                         console.log(error)
                         res.send(error)   
                     }
                 });
-                user.Albums=userAlbums;
+                //res.send(finalResult);
+                //finalResult.push(user);
             } catch (error) {
                 console.log(error)
                 res.send(error)   
             }
         });
-        res.send(users)
+        //console.log(finalResult);
+        res.send(finalResult)
     }catch (error) {
         console.log(error)
         res.send(error)   
